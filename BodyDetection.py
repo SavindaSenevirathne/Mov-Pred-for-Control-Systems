@@ -12,36 +12,39 @@ def detect(frame):
         cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 5)
     return frame
 
-fullBody_cascade = cv2.CascadeClassifier('./data/haarcascade_fullbody.xml')
-upperBody_cascade = cv2.CascadeClassifier('./data/haarcascade_upperbody.xml')
-lowerBody_cascade = cv2.CascadeClassifier('./data/haarcascade_lowerbody.xml')
+
+fullBody_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + '/haarcascade_fullbody.xml')
+upperBody_cascade = cv2.CascadeClassifier(
+    cv2.data.haarcascades + 'haarcascade_upperbody.xml')
+lowerBody_cascade = cv2.CascadeClassifier(
+    cv2.data.haarcascades + '/haarcascade_lowerbody.xml')
 fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
 
-# cap = cv2.VideoCapture(0)
-# fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
-# cap = cv2.VideoCapture('./media/IMG_5403_Trim.mp4')
+cap = cv2.VideoCapture(0)
+fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
+cap = cv2.VideoCapture('./media/IMG_5403_Trim.mp4')
 
-# while 1:
-#     ret, frame = cap.read()
-#     frame = cv2.resize(frame, (1366, 700), interpolation=cv2.INTER_AREA)
+while 1:
+    ret, frame = cap.read()
+    frame = cv2.resize(frame, (1366, 700), interpolation=cv2.INTER_AREA)
 
-#     # fgmask = fgbg.apply(frame)
-#     frame = detect(frame)
-#     cv2.imshow('detection', frame)
+    # fgmask = fgbg.apply(frame)
+    frame = detect(frame)
+    cv2.imshow('detection', frame)
 
 
-#     if cv2.waitKey(1) & 0xFF == ord('q'):
-#         break
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
-# cap.release()
-# cv2.destroyAllWindows()
-
-frame = cv2.imread('./media/images/IMG_5425.JPG')
-frame = detect(frame)
-frame = cv2.resize(frame, (500, 800), interpolation=cv2.INTER_AREA)
-
-cv2.imshow('test', frame)
-cv2.waitKey(0)
+cap.release()
 cv2.destroyAllWindows()
+
+# frame = cv2.imread('./media/images/IMG_5425.JPG')
+# frame = detect(frame)
+# frame = cv2.resize(frame, (500, 800), interpolation=cv2.INTER_AREA)
+
+# cv2.imshow('test', frame)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
 
