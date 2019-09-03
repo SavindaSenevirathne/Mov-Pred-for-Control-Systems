@@ -6,7 +6,9 @@ def detect(frame):
     frame_gray = cv2.equalizeHist(frame_gray)
     # fgmask = fgbg.apply(frame)
 
-    body = fullBody_cascade.detectMultiScale(frame_gray)
+    # body = fullBody_cascade.detectMultiScale(frame_gray)
+    body = upperBody_cascade.detectMultiScale(frame_gray)
+    # body = lowerBody_cascade.detectMultiScale(frame_gray)
     print(body)
     for (x, y, w, h) in body:
         cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0), 5)
@@ -22,7 +24,10 @@ fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
 
 cap = cv2.VideoCapture(0)
 fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
-cap = cv2.VideoCapture('./media/IMG_5403_Trim.mp4')
+cap = cv2.VideoCapture('./media/lady_walking.mp4')
+# cap = cv2.VideoCapture('./media/lobby.mp4')
+# cap = cv2.VideoCapture('./media/man_walking.mp4')
+# cap = cv2.VideoCapture('./media/two_men.mp4')
 
 while 1:
     ret, frame = cap.read()
