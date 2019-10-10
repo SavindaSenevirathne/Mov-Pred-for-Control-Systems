@@ -20,16 +20,21 @@ def detect(frame):
     detectedObjects = []
     for (x, y, w, h) in body:
         objectDetected = True
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
-        cv2.putText(frame, 'Detection', (x, y), cv2.FONT_HERSHEY_SIMPLEX,
+        frameC = frame
+        cv2.rectangle(frameC, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        cv2.putText(frameC, 'Detected Object', (x, y), cv2.FONT_HERSHEY_SIMPLEX,
                     1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
-
+        cv2.imshow('Detection', frameC)
+        cv2.imwrite('detected-object.jpg', frameC)
         detectedObjects.append((x,y,(x+w),(y+h)))
     return frame, objectDetected, detectedObjects
 
 def initializeTracking():
     print('Start tracking..')
     for box in detectedObjects:
+        # tracker = cv2.TrackerCSRT_create()
+        tracker = cv2.TrackerMOSSE_create()
+
         MultiTracker.add(tracker, frame, box)
 
     return True
@@ -44,7 +49,7 @@ if __name__ == "__main__":
     #     cv2.data.haarcascades + '/haarcascade_frontalface_alt.xml')
 
     # videoSouce = 0
-    videoSouce = 'media/man_walking.mp4'
+    videoSouce = 'media/cricket_2.mp4'
     cap = cv2.VideoCapture(videoSouce)
     if not cap.isOpened:
         print('--(!)Error opening video capture')
@@ -52,14 +57,17 @@ if __name__ == "__main__":
     isObjectDetected = False
     detectedObjects = []
     MultiTracker = cv2.MultiTracker_create()
-    tracker = cv2.TrackerCSRT_create()
     isTrackerAdded = False
 
     while True:
         ret, frame = cap.read()
+        # resize if the frame size is large
+        height, width, layers = frame.shape
+        if((height > 700) | (width > 1366)):
+          frame = cv2.resize(frame, (int(width/2), int(height/2)), interpolation=cv2.INTER_AREA)
+
         if not isObjectDetected:
             frameC, isObjectDetected, detectedObjects = detect(frame)
-            cv2.imshow('Detection', frameC)
             print('detected objects from the source', detectedObjects)
 
         if not isTrackerAdded and isObjectDetected:
@@ -67,6 +75,7 @@ if __name__ == "__main__":
             isTrackerAdded = initializeTracking()
 
         success, boxes = MultiTracker.update(frame)
+
         for i, newbox in enumerate(boxes):
             p1 = (int(newbox[0]), int(newbox[1]))
             p2 = (int(newbox[0] + newbox[2]/2), int(newbox[1] + newbox[3]))
