@@ -13,13 +13,15 @@ maxSize_h = 300  # 250
 def detectSkeleton(frame):
 	obj = PoseDetection()
 	frame1, frame2 = obj.detectPose(frame)
+	# cv2.imwrite('output-frame1.jpg', frame1)
+	# cv2.imwrite('output-frame2.jpg', frame2)
 	cv2.imshow('Pose skeleton', frame1)
 	cv2.imshow('Pose skeleton points', frame2)
 
 
 # Detect human
 def detect(frame):
-	objectDetected = False
+	isObjectDetected = False
 	frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	frame_gray = cv2.equalizeHist(frame_gray)
 
@@ -27,7 +29,7 @@ def detect(frame):
 		frame_gray, minSize=(minSize_w, minSize_h), maxSize=(maxSize_w, maxSize_h))
 	detectedObjects = []
 	for (x, y, w, h) in body:
-		objectDetected = True
+		isObjectDetected = True
 		frameC = frame
 		cv2.rectangle(frameC, (x, y), (x+w, y+h), (255, 0, 0), 2)
 		cv2.putText(frameC, 'Detected Object', (x, y), cv2.FONT_HERSHEY_SIMPLEX,
@@ -39,7 +41,7 @@ def detect(frame):
 		# Detecting posture recognition
 		# detectSkeleton(frameC)
 
-	return frame, objectDetected, detectedObjects
+	return frame, isObjectDetected, detectedObjects
 
 def initializeTracking():
 	print('Start tracking..')
@@ -86,8 +88,6 @@ if __name__ == "__main__":
 			# start tracking
 			isTrackerAdded = initializeTracking()
 		
-		frameSke = frame
-
 		success, boxes = MultiTracker.update(frame)
 
 		for i, newbox in enumerate(boxes):

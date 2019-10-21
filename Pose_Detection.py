@@ -2,27 +2,41 @@ import cv2
 import time
 import numpy as np
 
+""" 
+Coco dataset data points
+0 	- 	Nose
+1 	- 	Neck
+2 	- 	Right Shoulder
+3 	- 	Right Elbow
+4 	- 	Right Wrist
+5 	-	Left Shoulder
+6 	- 	Left Elbow
+7 	- 	Left Wrist
+8 	- 	Right Hip
+9 	- 	Right Knee
+10 	- 	Right Ankle
+11 	- 	Left Hip
+12 	- 	Left Knee
+13 	- 	LAnkle
+14 	- 	Right Eye
+15 	- 	Left Eye
+16 	- 	Right Ear 
+17 	- 	Left Ear
+18 	- 	Background
+
+ """
+
 class PoseDetection:
 	"Pose Detection happens here"
 
 	def detectPose(self, frame):
-		MODE = "COCO"
+		
+		protoFile = "pose/coco/pose_deploy_linevec.prototxt"
+		weightsFile = "pose/coco/pose_iter_440000.caffemodel"
+		nPoints = 18
+		POSE_PAIRS = [[1, 0], [1, 2], [1, 5], [2, 3], [3, 4], [5, 6], [6, 7], [1, 8], [
+			8, 9], [9, 10], [1, 11], [11, 12], [12, 13], [0, 14], [0, 15], [14, 16], [15, 17]]
 
-		if MODE is "COCO":
-			protoFile = "pose/coco/pose_deploy_linevec.prototxt"
-			weightsFile = "pose/coco/pose_iter_440000.caffemodel"
-			nPoints = 18
-			POSE_PAIRS = [[1, 0], [1, 2], [1, 5], [2, 3], [3, 4], [5, 6], [6, 7], [1, 8], [
-				8, 9], [9, 10], [1, 11], [11, 12], [12, 13], [0, 14], [0, 15], [14, 16], [15, 17]]
-
-		elif MODE is "MPI":
-			protoFile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt"
-			weightsFile = "pose/mpi/pose_iter_160000.caffemodel"
-			nPoints = 15
-			POSE_PAIRS = [[0, 1], [1, 2], [2, 3], [3, 4], [1, 5], [5, 6], [6, 7], [
-				1, 14], [14, 8], [8, 9], [9, 10], [14, 11], [11, 12], [12, 13]]
-		# frame = cv2.imread("Detected-object.jpg")
-		# frame = frame[67:67+151, 399:399+75]
 		frameCopy = np.copy(frame)
 		frameWidth = frame.shape[1]
 		frameHeight = frame.shape[0]
@@ -41,7 +55,6 @@ class PoseDetection:
 
 		output = net.forward()
 		print("time taken by network : {:.3f}".format(time.time() - t))
-
 		H = output.shape[2]
 		W = output.shape[3]
 
@@ -69,6 +82,25 @@ class PoseDetection:
 				points.append((int(x), int(y)))
 			else:
 				points.append(None)
+		print('points', points)
+
+		if points[1] and points[8] and points[10] and points[11] is not None :
+			print('Neck - ', points[1])
+			print('R hip - ', points[8])
+			print('L hip - ', points[11])
+			print('R anckle - ', points[10])
+
+			_, neck = points[1]
+			_, rHip = points[8]
+			_, lHip = points[11]
+			_, rAncle = points[10]
+			hip = (rHip+lHip)/2
+			print('Neck to ancle: ', rAncle - neck)
+			print('Neck to hip: ', hip - neck)
+			print('Hip to ancle: ', rAncle - hip)
+			print('upperbody/lowerbody: ', ((hip - neck)/(rAncle - hip)))
+		else:
+			print('No enough points to identify the posture')
 
 		# Draw Skeleton
 		for pair in POSE_PAIRS:
@@ -80,15 +112,6 @@ class PoseDetection:
 				cv2.circle(frame, points[partA], 8, (0, 0, 255),
 						thickness=-1, lineType=cv2.FILLED)
 
-
-		# cv2.imshow('Output-Keypoints', frameCopy)
-		# cv2.imshow('Output-Skeleton', frame)
-
-
-		# cv2.imwrite('Output-Keypoints.jpg', frameCopy)
-		# cv2.imwrite('Output-Skeleton.jpg', frame)
-
 		print("Total time taken : {:.3f}".format(time.time() - t))
 
-		# cv2.waitKey(0)
 		return frame, frameCopy
