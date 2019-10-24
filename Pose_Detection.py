@@ -29,8 +29,9 @@ Coco dataset data points
 class PoseDetection:
 	"Pose Detection happens here"
 
-	def detectPose(self, frame):
-		
+	@staticmethod
+	def detectPose(frame):
+
 		protoFile = "pose/coco/pose_deploy_linevec.prototxt"
 		weightsFile = "pose/coco/pose_iter_440000.caffemodel"
 		nPoints = 18
@@ -84,21 +85,40 @@ class PoseDetection:
 				points.append(None)
 		print('points', points)
 
-		if points[1] and points[8] and points[10] and points[11] is not None :
-			print('Neck - ', points[1])
-			print('R hip - ', points[8])
-			print('L hip - ', points[11])
-			print('R anckle - ', points[10])
+		if points[0] and points[8] and points[10] and points[11] and points[9] and points[12] and points[13] is not None :
+			# print('Nose - ', points[0])
+			# print('R hip - ', points[8])
+			# print('L hip - ', points[11])
+			# print('R Knee - ', points[9])
+			# print('L Knee - ', points[12])
+			# print('R anckle - ', points[10])			
+			# print('L anckle - ', points[13])
 
-			_, neck = points[1]
+
+			_, nose = points[0]
 			_, rHip = points[8]
 			_, lHip = points[11]
-			_, rAncle = points[10]
+			_, rKnee = points[9]
+			_, lKnee = points[12]
+			_, rAncle = points[10]			
+			_, lAncle = points[13]
+
 			hip = (rHip+lHip)/2
-			print('Neck to ancle: ', rAncle - neck)
-			print('Neck to hip: ', hip - neck)
-			print('Hip to ancle: ', rAncle - hip)
-			print('upperbody/lowerbody: ', ((hip - neck)/(rAncle - hip)))
+			knee = (rKnee+lKnee)/2
+			ancle = (rAncle+lAncle)/2
+			upperToLower = (hip - nose)/(ancle - hip)
+			kneeToUpper = (knee - hip)/(hip - nose)
+			print('Nose to ancle: ', ancle - nose)
+			print('Nose to hip: ', hip - nose)
+			print('Hip to knee: ', knee - hip)
+			print('Hip to ancle: ', ancle - hip)
+			print('upperbody/lowerbody: ', upperToLower)
+			print('hipToKnee/upperbody: ', kneeToUpper)
+
+			if kneeToUpper >= 0.5:
+				print('Person is standing')
+			else:
+				print('Person is sitting')
 		else:
 			print('No enough points to identify the posture')
 

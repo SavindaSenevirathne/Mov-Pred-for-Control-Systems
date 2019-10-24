@@ -2,17 +2,9 @@ import numpy as np
 import cv2
 from Pose_Detection import PoseDetection
 
-# Variables
-minSize_w = 60  # 60
-minSize_h = 100  # 130
-
-maxSize_w = 200  # 120
-maxSize_h = 300  # 250
-
-
 def detectSkeleton(frame):
-	obj = PoseDetection()
-	frame1, frame2 = obj.detectPose(frame)
+	# obj = PoseDetection()
+	frame1, frame2 = PoseDetection.detectPose(frame)
 	# cv2.imwrite('output-frame1.jpg', frame1)
 	# cv2.imwrite('output-frame2.jpg', frame2)
 	cv2.imshow('Pose skeleton', frame1)
@@ -38,9 +30,6 @@ def detect(frame):
 		# cv2.imwrite('detected-object.jpg', frameC)
 		detectedObjects.append((x,y,(x+w),(y+h)))
 
-		# Detecting posture recognition
-		# detectSkeleton(frameC)
-
 	return frame, isObjectDetected, detectedObjects
 
 def initializeTracking():
@@ -57,21 +46,51 @@ def initializeTracking():
 
 # Main method
 if __name__ == "__main__":
+	# Variables
+	minSize_w = 60  # 60
+	minSize_h = 100  # 100
+
+	maxSize_w = 200  # 120
+	maxSize_h = 300  # 250
 	cascade = cv2.CascadeClassifier(
 		cv2.data.haarcascades + '/haarcascade_upperbody.xml')
 	# cascade = cv2.CascadeClassifier(
 	#     cv2.data.haarcascades + '/haarcascade_frontalface_alt.xml')
+
 	# videoSouce = 0
 	videoSouce = 'media/common2.MOV'
+
+	# user inputs
+	print('Common room     [0]')
+	print('Aruna Commmon 1 [1]')
+	print('Aruna Commmon 2 [2]')
+	print('Live Stream     [3]')
+	userInput = input('Choose the video source: ')
+	x = int(userInput)
+	if  x is 0:
+		print('Common room') # default option
+	elif x is 1:
+		print('Aruna Commmon 1')
+		minSize_w = 30  # 60
+		minSize_h = 50  # 100
+		videoSouce = 'media/aruna1.MOV'
+	elif x is 2:
+		print('Aruna Commmon 2')
+		videoSouce = 'media/aruna2.MOV'
+	elif x is 3:
+		print('Live stream')
+		videoSouce = 0
+
 	cap = cv2.VideoCapture(videoSouce)
 	if not cap.isOpened:
 		print('--(!)Error opening video capture')
 		exit(0)
+
 	isObjectDetected = False
 	detectedObjects = []
 	MultiTracker = cv2.MultiTracker_create()
 	isTrackerAdded = False
-
+	print('Detecting..')
 	while True:
 		ret, frame = cap.read()
 		# resize if the frame size is large
@@ -82,7 +101,8 @@ if __name__ == "__main__":
 
 		if not isObjectDetected:
 			frameC, isObjectDetected, detectedObjects = detect(frame)
-			print('detected objects from the source', detectedObjects)
+			if len(detectedObjects) > 0:
+				print('detected objects from the source', detectedObjects)
 
 		if not isTrackerAdded and isObjectDetected:
 			# start tracking
@@ -92,7 +112,8 @@ if __name__ == "__main__":
 
 		for i, newbox in enumerate(boxes):
 			p1 = (int(newbox[0]), int(newbox[1]))
-			p2 = (int(newbox[0] + newbox[2]/2), int(newbox[1] + newbox[3]))
+			p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
+			# p2 = (int(newbox[2]), int(newbox[3]))
 			cv2.rectangle(frame, p1, p2, (255, 0, 0), 2, 1)
 			cv2.putText(frame, 'Tracking',p1, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
 
