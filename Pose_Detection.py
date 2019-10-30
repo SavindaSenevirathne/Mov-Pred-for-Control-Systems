@@ -116,8 +116,16 @@ class PoseDetection:
 			print('hipToKnee/upperbody: ', kneeToUpper)
 
 			if kneeToUpper >= 0.5:
+				cv2.putText(frame, 'Standing', (100,100), cv2.FONT_HERSHEY_SIMPLEX, 
+							1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
+				cv2.putText(frameCopy, 'Standing', (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 
+							1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
 				print('Person is standing')
 			else:
+				cv2.putText(frame, 'Sitting', (100, 100), cv2.FONT_HERSHEY_SIMPLEX,
+				            1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
+				cv2.putText(frameCopy, 'Sitting', (100, 100), cv2.FONT_HERSHEY_SIMPLEX,
+				            1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
 				print('Person is sitting')
 		else:
 			print('No enough points to identify the posture')

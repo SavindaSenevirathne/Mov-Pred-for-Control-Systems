@@ -2,6 +2,14 @@ import numpy as np
 import cv2
 from Pose_Detection import PoseDetection
 
+def waitAndClose(list):
+	while True:
+		waitKey = cv2.waitKey(10)
+		if waitKey == ord('x'):
+			for win in list:
+				cv2.destroyWindow(win)
+			break
+
 def detectSkeleton(frame):
 	# obj = PoseDetection()
 	frame1, frame2 = PoseDetection.detectPose(frame)
@@ -9,6 +17,7 @@ def detectSkeleton(frame):
 	# cv2.imwrite('output-frame2.jpg', frame2)
 	cv2.imshow('Pose skeleton', frame1)
 	cv2.imshow('Pose skeleton points', frame2)
+	waitAndClose(['Pose skeleton', 'Pose skeleton points'])
 
 
 # Detect human
@@ -16,7 +25,6 @@ def detect(frame):
 	isObjectDetected = False
 	frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	frame_gray = cv2.equalizeHist(frame_gray)
-
 	body = cascade.detectMultiScale(
 		frame_gray, minSize=(minSize_w, minSize_h), maxSize=(maxSize_w, maxSize_h))
 	detectedObjects = []
@@ -29,6 +37,7 @@ def detect(frame):
 		cv2.imshow('Detection', frameC)
 		# cv2.imwrite('detected-object.jpg', frameC)
 		detectedObjects.append((x,y,(x+w),(y+h)))
+		waitAndClose(['Detection'])
 
 	return frame, isObjectDetected, detectedObjects
 
@@ -79,7 +88,7 @@ if __name__ == "__main__":
 		videoSouce = 'media/aruna2.MOV'
 	elif x is 3:
 		print('Live stream')
-		videoSouce = 0
+		videoSouce = 'rtsp://admin:abcd@1234@192.168.8.101/'
 
 	cap = cv2.VideoCapture(videoSouce)
 	if not cap.isOpened:
@@ -107,6 +116,8 @@ if __name__ == "__main__":
 		if not isTrackerAdded and isObjectDetected:
 			# start tracking
 			isTrackerAdded = initializeTracking()
+
+		cleanFrame = np.copy(frame)
 		
 		success, boxes = MultiTracker.update(frame)
 
@@ -128,7 +139,7 @@ if __name__ == "__main__":
 		if waitKey == ord('q'):
 			break
 		elif waitKey == ord('c'):
-			detectSkeleton(frame)
+			detectSkeleton(cleanFrame)
 
 	cap.release()
 	cv2.destroyAllWindows()
