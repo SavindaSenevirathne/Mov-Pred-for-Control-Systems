@@ -114,17 +114,18 @@ class PoseDetection:
 			print('Hip to ancle: ', ancle - hip)
 			print('upperbody/lowerbody: ', upperToLower)
 			print('hipToKnee/upperbody: ', kneeToUpper)
-
+			posx, posy = points[0]
+			posy = posy-20
 			if kneeToUpper >= 0.5:
-				cv2.putText(frame, 'Standing', (100,100), cv2.FONT_HERSHEY_SIMPLEX, 
+				cv2.putText(frame, 'Standing', (posx, posy), cv2.FONT_HERSHEY_SIMPLEX, 
 							1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
-				cv2.putText(frameCopy, 'Standing', (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 
+				cv2.putText(frameCopy, 'Standing', (posx, posy), cv2.FONT_HERSHEY_SIMPLEX, 
 							1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
 				print('Person is standing')
 			else:
-				cv2.putText(frame, 'Sitting', (100, 100), cv2.FONT_HERSHEY_SIMPLEX,
+				cv2.putText(frame, 'Sitting', (posx, posy), cv2.FONT_HERSHEY_SIMPLEX,
 				            1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
-				cv2.putText(frameCopy, 'Sitting', (100, 100), cv2.FONT_HERSHEY_SIMPLEX,
+				cv2.putText(frameCopy, 'Sitting', (posx, posy), cv2.FONT_HERSHEY_SIMPLEX,
 				            1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
 				print('Person is sitting')
 		else:

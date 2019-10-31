@@ -16,7 +16,7 @@ def detectSkeleton(frame):
 	# cv2.imwrite('output-frame1.jpg', frame1)
 	# cv2.imwrite('output-frame2.jpg', frame2)
 	cv2.imshow('Pose skeleton', frame1)
-	cv2.imshow('Pose skeleton points', frame2)
+	# cv2.imshow('Pose skeleton points', frame2)
 	waitAndClose(['Pose skeleton', 'Pose skeleton points'])
 
 
