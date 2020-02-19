@@ -28,10 +28,13 @@ Coco dataset data points
 
 class PoseDetection:
 	"Pose Detection happens here"
+	def distance_to_camera(self, knownHeight, focalLength, perHeight):
+		# compute and return the distance from the maker to the camera
+		return (knownHeight * focalLength) / perHeight
 
 	@staticmethod
 	def detectPose(frame):
-
+		pose = PoseDetection()
 		protoFile = "pose/coco/pose_deploy_linevec.prototxt"
 		weightsFile = "pose/coco/pose_iter_440000.caffemodel"
 		nPoints = 18
@@ -86,15 +89,6 @@ class PoseDetection:
 		print('points', points)
 
 		if points[0] and points[8] and points[10] and points[11] and points[9] and points[12] and points[13] is not None :
-			# print('Nose - ', points[0])
-			# print('R hip - ', points[8])
-			# print('L hip - ', points[11])
-			# print('R Knee - ', points[9])
-			# print('L Knee - ', points[12])
-			# print('R anckle - ', points[10])			
-			# print('L anckle - ', points[13])
-
-
 			_, nose = points[0]
 			_, rHip = points[8]
 			_, lHip = points[11]
@@ -114,6 +108,7 @@ class PoseDetection:
 			print('Hip to ancle: ', ancle - hip)
 			print('upperbody/lowerbody: ', upperToLower)
 			print('hipToKnee/upperbody: ', kneeToUpper)
+			height = ancle - nose
 			posx, posy = points[0]
 			posy = posy-20
 			if kneeToUpper >= 0.5:
@@ -128,6 +123,15 @@ class PoseDetection:
 				cv2.putText(frameCopy, 'Sitting', (posx, posy), cv2.FONT_HERSHEY_SIMPLEX,
 				            1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
 				print('Person is sitting')
+			
+			focalLength = (200 * 120) / 70
+			print("Current Height ", height)
+			distance = pose.distance_to_camera(70, focalLength, height)/12
+			cv2.putText(frame, "%.2fft" % (distance),
+				(frameCopy.shape[1] - 200, frameCopy.shape[0] - 20), cv2.FONT_HERSHEY_SIMPLEX,
+				2.0, (0, 255, 0), 3)
+
+
 		else:
 			print('No enough points to identify the posture')
 

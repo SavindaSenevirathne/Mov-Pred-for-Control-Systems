@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from Pose_Detection import PoseDetection
+# from Pose_Detection_Multi import PoseDetection
 
 def waitAndClose(list):
 	while True:
@@ -76,17 +77,17 @@ if __name__ == "__main__":
 	print('Live Stream     [3]')
 	userInput = input('Choose the video source: ')
 	x = int(userInput)
-	if  x is 0:
+	if  x == 0:
 		print('Common room') # default option
-	elif x is 1:
+	elif x == 1:
 		print('Aruna Commmon 1')
 		minSize_w = 30  # 60
 		minSize_h = 50  # 100
 		videoSouce = 'media/aruna1.MOV'
-	elif x is 2:
+	elif x == 2:
 		print('Aruna Commmon 2')
 		videoSouce = 'media/aruna2.MOV'
-	elif x is 3:
+	elif x == 3:
 		print('Live stream')
 		videoSouce = 'rtsp://admin:abcd@1234@192.168.8.101/'
 
