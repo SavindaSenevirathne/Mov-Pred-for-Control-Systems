@@ -69,7 +69,7 @@ if __name__ == "__main__":
 	#     cv2.data.haarcascades + '/haarcascade_frontalface_alt.xml')
 
 	# face detection section
-	faceCapture = cv2.VideoCapture(1)
+	faceCapture = cv2.VideoCapture(cv2.CAP_DSHOW)
 	if not faceCapture.isOpened:
 		print('--(!)Error opening video capture')
 		exit(0) 
