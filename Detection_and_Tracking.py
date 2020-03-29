@@ -13,7 +13,7 @@ def waitAndClose(list):
 
 def detectSkeleton(frame):
 	# obj = PoseDetection()
-	frame1, frame2 = PoseDetection.detectPose(frame)
+	frame1, frame2 = PoseDetection.detectPose(frame, False)
 	# cv2.imwrite('output-frame1.jpg', frame1)
 	# cv2.imwrite('output-frame2.jpg', frame2)
 	cv2.imshow('Pose skeleton', frame1)

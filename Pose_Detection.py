@@ -33,7 +33,7 @@ class PoseDetection:
 		return (knownHeight * focalLength) / perHeight
 
 	@staticmethod
-	def detectPose(frame):
+	def detectPose(frame, logDataToFile):
 		pose = PoseDetection()
 		protoFile = "pose/coco/pose_deploy_linevec.prototxt"
 		weightsFile = "pose/coco/pose_iter_440000.caffemodel"
@@ -94,12 +94,12 @@ class PoseDetection:
 			_, lHip = points[11]
 			_, rKnee = points[9]
 			_, lKnee = points[12]
-			_, rAncle = points[10]			
-			_, lAncle = points[13]
+			rAncleX, rAncleY = points[10]			
+			lAncleX, lAncleY = points[13]
 
 			hip = (rHip+lHip)/2
 			knee = (rKnee+lKnee)/2
-			ancle = (rAncle+lAncle)/2
+			ancle = (rAncleY+lAncleY)/2
 			upperToLower = (hip - nose)/(ancle - hip)
 			kneeToUpper = (knee - hip)/(hip - nose)
 			print('Nose to ancle: ', ancle - nose)
@@ -111,27 +111,35 @@ class PoseDetection:
 			height = ancle - nose
 			posx, posy = points[0]
 			posy = posy-20
+			posture = ""
 			if kneeToUpper >= 0.5:
 				cv2.putText(frame, 'Standing', (posx, posy), cv2.FONT_HERSHEY_SIMPLEX, 
 							1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
 				cv2.putText(frameCopy, 'Standing', (posx, posy), cv2.FONT_HERSHEY_SIMPLEX, 
 							1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
+				posture = "Standing"
 				print('Person is standing')
 			else:
 				cv2.putText(frame, 'Sitting', (posx, posy), cv2.FONT_HERSHEY_SIMPLEX,
 				            1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
 				cv2.putText(frameCopy, 'Sitting', (posx, posy), cv2.FONT_HERSHEY_SIMPLEX,
 				            1, (0, 0, 255), 2, lineType=cv2.LINE_AA)
+				posture = "Sitting"
 				print('Person is sitting')
 			
 			focalLength = (200 * 120) / 70
 			print("Current Height ", height)
 			distance = pose.distance_to_camera(70, focalLength, height)/12
 			cv2.putText(frame, "%.2fft" % (distance),
-				(frameCopy.shape[1] - 200, frameCopy.shape[0] - 20), cv2.FONT_HERSHEY_SIMPLEX,
+				(frameCopy.shape[1] - 220, frameCopy.shape[0] - 20), cv2.FONT_HERSHEY_SIMPLEX,
 				2.0, (0, 255, 0), 3)
 
-
+			if logDataToFile: 
+				outputData = open("outputData.txt", "a+")
+				postionX = (rAncleX + lAncleX) / 2
+				postionY = (rAncleY + lAncleY) / 2
+				data = "Position: (x: %d ,y: %d) Posture: %s Distance: %.2f\n" % (postionX, postionY, posture, distance)
+				outputData.write(data)
 		else:
 			print('No enough points to identify the posture')
 
