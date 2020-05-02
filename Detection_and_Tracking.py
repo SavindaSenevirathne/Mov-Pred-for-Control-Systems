@@ -91,6 +91,7 @@ if __name__ == "__main__":
 
 		waitKey = cv2.waitKey(10)
 		if waitKey == ord('x'):
+			faceCapture.release()
 			# cv2.destroyWindow('Tracking')
 			break
 
@@ -110,7 +111,7 @@ if __name__ == "__main__":
 	# 	print('Aruna Commmon 1')
 	# 	minSize_w = 30  # 60
 	# 	minSize_h = 50  # 100
-	# 	videoSouce = 'media/aruna1.MOV'
+		# videoSouce = 'media/aruna1.MOV'
 	# elif x == 2:
 	# 	print('Aruna Commmon 2')
 	# 	videoSouce = 'media/aruna2.MOV'
@@ -168,6 +169,6 @@ if __name__ == "__main__":
 		elif waitKey == ord('c'):
 			detectSkeleton(cleanFrame)
 
-	faceCapture.release()
+	# faceCapture.release()
 	cap.release()
 	cv2.destroyAllWindows()

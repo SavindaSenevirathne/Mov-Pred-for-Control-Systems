@@ -1,6 +1,8 @@
 import cv2
 import time
 import numpy as np
+from Firebase import firebase
+import datetime
 
 """ 
 Coco dataset data points
@@ -138,6 +140,16 @@ class PoseDetection:
 				outputData = open("outputData.txt", "a+")
 				postionX = (rAncleX + lAncleX) / 2
 				postionY = (rAncleY + lAncleY) / 2
+				# if (database)
+				database = firebase()
+				database.send('dataLogs', {
+					'x': postionX,
+					'y': postionY,
+					'posture': posture,
+					'distance': distance,
+					'dateTime': datetime.datetime.now().isoformat()
+				})
+				database.getData()
 				data = "Position: (x: %d ,y: %d) Posture: %s Distance: %.2f\n" % (postionX, postionY, posture, distance)
 				outputData.write(data)
 		else:
