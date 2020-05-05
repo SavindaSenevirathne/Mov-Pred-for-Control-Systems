@@ -109,3 +109,5 @@ venv.bak/
 # model files
 pose/coco/*.caffemodel
 pose/mpi/*.caffemodel
+
+firebase/*
