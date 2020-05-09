@@ -74,8 +74,8 @@ class detectPerson:
 				j = np.argmax(preds)
 				proba = preds[j]
 				name = self.le.classes_[j]
-				# if name is not None:
-				# 	personName = name
+				if name is not None:
+					personName = name
 
 				# draw the bounding box of the face along with the
 				# associated probability
