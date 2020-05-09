@@ -111,3 +111,5 @@ pose/coco/*.caffemodel
 pose/mpi/*.caffemodel
 
 firebase/*
+
+opencvFaceRecognition/dataset/*
