@@ -7,8 +7,9 @@ This system will predict human movement and will give appropriate control signal
 - firebase-admin - for firebase database integration
 
 ## Models
-Download the model files using the getModels.sh file
-`./getModels.sh`
+Model can be downloaded from <https://drive.google.com/open?id=1cnTp0pKdgM1ivPffllbc8YAOdM3iJVxM>
+
+Add the downloaded model file inside pose/coco folder
 
 ## Creators
 
