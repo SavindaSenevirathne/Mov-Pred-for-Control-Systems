@@ -4,6 +4,8 @@ import datetime
 import os
 from Pose_Detection import PoseDetection
 from opencvFaceRecognition.recognize_person import detectPerson
+from opencvFaceRecognition.extact_embeddings_person import extractEmbeddings
+from opencvFaceRecognition.train_model_person import trainModel
 
 
 # from Pose_Detection_Multi import PoseDetection
@@ -136,6 +138,11 @@ if __name__ == "__main__":
             if(recognizedPerson == "unknown"):
                 cv2.destroyAllWindows()
                 recognizedPerson = addUnTodataSet(faceCapture)
+                faceCapture.release()
+                cv2.destroyAllWindows()
+                extractEmbeddings.embedding()
+                trainModel.training()
+                break
             faceCapture.release()
             cv2.destroyAllWindows()
             break
