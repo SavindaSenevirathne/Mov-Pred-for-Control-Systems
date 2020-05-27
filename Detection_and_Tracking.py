@@ -140,8 +140,8 @@ if __name__ == "__main__":
                 recognizedPerson = addUnTodataSet(faceCapture)
                 faceCapture.release()
                 cv2.destroyAllWindows()
-                extractEmbeddings.embedding()
-                trainModel.training()
+                extractEmbeddings().embedding()
+                trainModel().training()
                 break
             faceCapture.release()
             cv2.destroyAllWindows()

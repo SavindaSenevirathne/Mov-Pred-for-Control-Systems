@@ -3,14 +3,14 @@ from imutils import paths
 import numpy as np
 import argparse
 import imutils
-import pickleP
+import pickle
 import cv2
 import os
 
 
 class extractEmbeddings:
     # load our serialized face detector from disk
-    def embedding():
+    def embedding(self):
         print("[INFO] loading face detector...")
         protoPath = os.path.sep.join(
             ["opencvFaceRecognition", "face_detection_model", "deploy.prototxt"])

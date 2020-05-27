@@ -7,7 +7,7 @@ import pickle
 
 class trainModel:
     # load the face embeddings
-    def training():
+    def training(self):
         print("[INFO] loading face embeddings...")
         data = pickle.loads(
             open("opencvFaceRecognition/output/embeddings.pickle", "rb").read())
