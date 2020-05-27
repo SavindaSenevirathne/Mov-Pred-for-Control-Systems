@@ -93,7 +93,7 @@ class Interface:
 					self.personNameVar.set('Recognized Person: ' + self.detectedPersonName)
 				# perform skeleton detection on button press
 				if (self.performSkeletonDetection):
-					if currentNumber % 5 == 0:
+					if currentNumber % 30 == 0:
 						self.frame, frameCopy = PoseDetection.detectPose(self.frame, False)
 					currentNumber += 1
 		
@@ -130,6 +130,8 @@ class Interface:
 		print("[INFO] saved {}".format(filename))
 
 	def startSkeletonDetection(self):
+		self.vs.release()
+		self.vs = cv2.VideoCapture('media/common2.MOV')
 		self.performSkeletonDetection = not self.performSkeletonDetection
 
 	def confirmRecognition(self):
