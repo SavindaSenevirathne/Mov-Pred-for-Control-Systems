@@ -40,22 +40,27 @@ class Interface:
 		# create a button, that when pressed, will take the current
 		# frame and save it to file
 		self.btn1 = tki.Button(self.root, text="Capture",
-							   command=self.takeSnapshot, state="disabled")
-		self.btn1.pack(side="bottom", expand="no", padx=10,
-					   pady=10)
+							   command=self.takeSnapshot, state="disabled", font=("Times", 15, "bold"))
+		self.btn1.grid(row=2, column=4, padx=5, pady=5)
+
 		self.btn2 = tki.Button(
-			self.root, text="Start", command=self.startSkeletonDetection, state="disabled")
-		self.btn2.pack(side="bottom", expand="no", padx=10,
-					   pady=10)
+			self.root, text="Start", command=self.startSkeletonDetection, state="disabled", font=("Times", 15, "bold"))
+		self.btn2.grid(row=2, column=5, padx=5, pady=5)
+
 		self.btn3 = tki.Button(self.root, text="Confirm",
-							   command=self.confirmRecognition)
-		self.btn3.pack(side="bottom", expand="no", padx=10,
-					   pady=10)
+							   command=self.confirmRecognition, font=("Times", 15, "bold"))
+		self.btn3.grid(row=2, column=6, padx=5, pady=5)
+
 		self.personNameVar = tki.StringVar()
 		self.personNameVar.set('Recognized Person: ')
-		nameLabel = tki.Label(self.root, textvariable=self.personNameVar)
-		nameLabel.pack(side="bottom", expand="no", padx=10,
-					   pady=10)
+		nameLabel = tki.Label(self.root, textvariable=self.personNameVar, font=("Times", 15, "bold"))
+		nameLabel.grid(row=1, column=1, columnspan=9, padx=5, pady=5)
+
+		self.instruction = tki.StringVar()
+		self.instruction.set('Please click confirm button to confirm...')
+		nameLabel = tki.Label(self.root, textvariable=self.instruction,fg="blue", font=("Times", 14, "bold"))
+		nameLabel.grid(row=3, column=1, columnspan=9, padx=5, pady=5)
+
 
 		# start a thread that constantly pools the video sensor for
 		# the most recently read frame
@@ -92,7 +97,7 @@ class Interface:
 				if((h > 700) | (w > 1366)):
 					self.frame = cv2.resize(
 						self.frame, (int(w/2), int(h/2)), interpolation=cv2.INTER_AREA)
-
+				# perform face recognition on button press
 				if (self.performFaceRecognition):
 					self.frame, self.detectedPersonName = detectPerson().detect_face(self.frame)
 					self.personNameVar.set(
@@ -103,7 +108,7 @@ class Interface:
 						self.frame, frameCopy = PoseDetection.detectPose(
 							self.frame, False)
 					currentNumber += 1
-		
+
 				# OpenCV represents images in BGR order; however PIL
 				# represents images in RGB order, so we need to swap
 				# the channels, then convert to PIL and ImageTk format
@@ -115,7 +120,8 @@ class Interface:
 				if self.panel is None:
 					self.panel = tki.Label(image=image)
 					self.panel.image = image
-					self.panel.pack(side="left", padx=10, pady=10)
+					self.panel.grid(row=0, column=0,
+									columnspan=11, padx=5, pady=5)
 
 				# otherwise, simply update the panel
 				else:
@@ -132,14 +138,19 @@ class Interface:
 		self.img_counter += 1
 		if(self.img_counter > 5):
 			self.btn2["state"] = "active"
+			self.instruction.set('You have captured '+str(self.img_counter)+'(>5) images. If you want, you can start now...')
+		else:
+			self.instruction.set('Please capture more than 5 images. You have taken only '+str(self.img_counter)+' images...')
 
 	def startSkeletonDetection(self):
-		if(self.detectedPersonName == "unknown"):
-			self.detectedPersonName = self.directory
-			extractEmbeddings().embedding()
-			trainModel().training()
 		self.btn1["state"] = "disabled"
 		self.btn2["state"] = "disabled"
+		if(self.detectedPersonName == "unknown"):
+			self.personNameVar.set('Newly added Person: ' +self.directory)
+			self.instruction.set('Training the face data set with newly added data....')
+			extractEmbeddings().embedding()
+			trainModel().training()
+		self.instruction.set('')
 		self.vs.release()
 		self.vs = cv2.VideoCapture('media/common2.MOV')
 		self.performFaceRecognition = False
@@ -147,6 +158,10 @@ class Interface:
 
 	def confirmRecognition(self):
 		self.performFaceRecognition = False
+		self.frame, self.detectedPersonName = detectPerson().detect_face(self.frame)
+		self.personNameVar.set(
+		'Recognized Person: ' + self.detectedPersonName)
+		# check detected person is unkonwn
 		if(self.detectedPersonName == "unknown"):
 			self.img_counte = 0
 			self.btn3["state"] = "disabled"
@@ -157,9 +172,15 @@ class Interface:
 			self.directory = todayTime
 			self.path = os.path.join(parent_dir, self.directory)
 			os.mkdir(self.path)
+			self.instruction.set('Please capture more than 5 images. You have taken only '+str(self.img_counter)+' images...')
+		# check detected person is null
+		elif(self.detectedPersonName == ""):
+			self.performFaceRecognition = True
+			self.instruction.set('Please click confirm button to confirm after detecting as a person...')
 		else:
 			self.btn3["state"] = "disabled"
 			self.btn2["state"] = "active"
+			self.instruction.set('Recognize the person as '+self.detectedPersonName+'. You can start now...')
 
 	def onClose(self):
 		# set the stop event, cleanup the camera, and allow the rest of
