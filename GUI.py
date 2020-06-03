@@ -33,6 +33,9 @@ class Interface:
 		self.thread = None
 		self.stopEvent = None
 
+		# model training thread
+		self.modelTrainingThread = None
+
 		# initialize the root window and image panel
 		self.root = tki.Tk()
 		self.panel = None
@@ -148,8 +151,8 @@ class Interface:
 		if(self.detectedPersonName == "unknown"):
 			self.personNameVar.set('Newly added Person: ' +self.directory)
 			self.instruction.set('Training the face data set with newly added data....')
-			extractEmbeddings().embedding()
-			trainModel().training()
+			self.modelTrainingThread = threading.Thread(target=self.trainFacialModel, args=())
+			self.modelTrainingThread.start()
 		self.instruction.set('')
 		self.vs.release()
 		self.vs = cv2.VideoCapture('media/common2.MOV')
@@ -187,8 +190,18 @@ class Interface:
 		# the quit process to continue
 		print("[INFO] closing...")
 		self.stopEvent.set()
+		print("[INFO] releasing camera..")
 		self.vs.release()
+		print("[INFO] closing window..")
 		self.root.destroy()
+		if self.modelTrainingThread is not None:
+			print("[INFO] stoping training thread..")
+			self.modelTrainingThread._stop()
+		exit(0)
+
+	def trainFacialModel(self):
+		extractEmbeddings().embedding()
+		trainModel().training()
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
