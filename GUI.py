@@ -161,9 +161,7 @@ class Interface:
 
 	def confirmRecognition(self):
 		self.performFaceRecognition = False
-		self.frame, self.detectedPersonName = detectPerson().detect_face(self.frame)
-		self.personNameVar.set(
-		'Recognized Person: ' + self.detectedPersonName)
+		time.sleep(0.1)
 		# check detected person is unkonwn
 		if(self.detectedPersonName == "unknown"):
 			self.img_counte = 0
